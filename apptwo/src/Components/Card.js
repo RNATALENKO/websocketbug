@@ -15,7 +15,9 @@ export const Card = (props)=> {
 
         <View style={{padding:10, backgroundColor:'white', borderWidth:1, width:'100%', marginBottom:20, height:100}}>
 
-
+            <Text>
+                {props.singleProject.timestamp}
+            </Text>
 
         </View>
          

@@ -15,31 +15,46 @@ export const Screen1 = () =>{
     const [dataSet, setDataSet] = useState([]);
     const [dataBool, setDataBool] = useState(false);
 
-    const socket = io('http://localhost:8080');
+
+    const socketRef = useRef();
 
     //executes once on render
     useEffect(()=>{
 
         console.log('inside app twos useEffect');
-        
-        //get the updated set of data
+
+        const socket = io('http://localhost:8080');
+        socketRef.current = socket; 
+
         socket.emit('getPeople');
-        socket.on('receiveAllPeople', (data)=>{
+    
+        return ()=>{
+            socket.close()
+        }
+        
+    },[])
+
+
+    useEffect(()=>{
+
+        console.log('inside app twos 2nd useEffect');
+       
+        socketRef.current.emit('getPeople');
+
+        //get the updated set of data
+        socketRef.current.on('receiveAllPeople', (data)=>{
             setDataSet(data);
         })
-
-        //listen for the trigger
-        socket.on('trigger', ()=>{
-            if(dataBool==false){
+      
+    
+        socketRef.current.on('trigger', (data)=>{
+            if(dataBool){
+                setDataBool(false)
+            }
+            else{
                 setDataBool(true);
             }
-            else{setDataBool(false)}
         })
-
-        return ()=>[
-            socket.close()
-        ]
-    
         
     },[dataBool])
 

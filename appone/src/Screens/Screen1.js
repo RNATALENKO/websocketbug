@@ -14,16 +14,19 @@ import { useDispatch } from 'react-redux';
 
 export const Screen1 = () =>{
 
-    const socket = io('http://localhost:8080'); 
-
     const [dataSet, setDataSet] = useState([]);
 
+    const socketRef = useRef(); 
+
     useEffect(()=>{
+
+        const socket = io('http://localhost:8080');
+        socketRef.current = socket; 
+
         return ()=>{
             socket.close();
         }
-    },[dataSet]) //every time data set is changed, the component unmounts
-
+    },[])
 
 
     return(
@@ -31,18 +34,20 @@ export const Screen1 = () =>{
 
 
                 <TouchableOpacity style={{backgroundColor:'blue', padding:10, marginBottom:10}} onPress={()=>{
+                    const date = new Date(); 
 
                     //a new person 
                     let person = {
                         name:'Greg',
-                        age:19
+                        age:19,
+                        timestamp:100000000,
                     }
 
                     //update the ui (but this creates a new connection in the server)
                     setDataSet([...dataSet,person]);
                     
                     //emit the person to the server
-                    socket.emit('addPerson', person);
+                    socketRef.current.emit('addPerson', person);
 
                     
 
